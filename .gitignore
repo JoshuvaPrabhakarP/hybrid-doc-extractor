@@ -1,0 +1,12 @@
+venv/
+__pycache__/
+*.pyc
+.cache/
+*.pt
+*.pth
+*.bin
+wandb/
+data/raw/
+*.log
+causal-conv1d/
+mamba/

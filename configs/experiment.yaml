@@ -1,0 +1,65 @@
+# config.yaml - Shared experiment configuration
+# All three model arms use identical hyperparams for fair comparison
+
+experiment:
+  name: "hybrid-doc-extractor"
+  seed: [42, 123, 456]
+  device: "cuda"
+
+data:
+  datasets: ["sroie", "cord", "funsd"]
+  max_seq_len: 512
+  train_split: 0.80
+  val_split: 0.10
+  test_split: 0.10
+
+tokenizer:
+  type: "bpe"
+  vocab_size: 8000
+  min_frequency: 2
+  special_tokens: ["<pad>", "<unk>", "<s>", "</s>"]
+
+labels:
+  - "O"
+  - "B-DATE"
+  - "I-DATE"
+  - "B-AMOUNT"
+  - "I-AMOUNT"
+  - "B-NAME"
+  - "I-NAME"
+
+model:
+  d_model: 256
+  n_layers: 6
+  n_heads: 8
+  d_ff: 1024
+  dropout: 0.1
+  max_len: 512
+
+  arms:
+    transformer:
+      attn_layers: 6
+      mamba_layers: 0
+    mamba:
+      attn_layers: 0
+      mamba_layers: 6
+    hybrid_5_1:
+      attn_layers: 1
+      mamba_layers: 5
+
+  ablation_ratios:
+    - { attn: 2, mamba: 4 }
+    - { attn: 3, mamba: 3 }
+
+training:
+  optimizer: "adamw"
+  lr: 3e-4
+  weight_decay: 0.01
+  scheduler: "onecycle"
+  epochs: 20
+  batch_size: 16
+  grad_clip: 1.0
+
+evaluation:
+  metrics: ["entity_f1", "per_field_f1", "throughput_docs_per_sec", "peak_gpu_mb"]
+  sequence_length_ablation: [256, 512, 1024]
