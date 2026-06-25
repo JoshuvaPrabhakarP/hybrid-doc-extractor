@@ -10,3 +10,5 @@ data/raw/
 *.log
 causal-conv1d/
 mamba/
+data/raw/
+data/processed/
