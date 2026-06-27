@@ -1,40 +1,49 @@
-# config.yaml - Shared experiment configuration
+# experiment.yaml - Shared experiment configuration
 # All three model arms use identical hyperparams for fair comparison
 
 experiment:
   name: "hybrid-doc-extractor"
-  seed: [42, 123, 456]
+  seed: [42, 123, 456]       # 3 seeds for statistical significance
   device: "cuda"
 
 data:
-  datasets: ["sroie", "cord", "funsd"]
-  max_seq_len: 512
-  train_split: 0.80
-  val_split: 0.10
-  test_split: 0.10
+  datasets: ["wildreceipt", "sroie", "cord"]   # FUNSD dropped (structural labels only)
+  total_documents: 3684
+  max_seq_len: 512            # 99%+ docs fit; max subwords observed = 646
+  train_split: 0.80           # 2,947 docs
+  val_split: 0.10             #   368 docs
+  test_split: 0.10            #   369 docs
 
 tokenizer:
   type: "bpe"
   vocab_size: 8000
   min_frequency: 2
-  special_tokens: ["<pad>", "<unk>", "<s>", "</s>"]
+  special_tokens: ["[PAD]", "[UNK]", "[CLS]", "[SEP]", "[MASK]"]
+  # IDs:            0         1        2        3        4
+  path: "tokenizer_training/tokenizer.json"
 
 labels:
-  - "O"
-  - "B-DATE"
-  - "I-DATE"
-  - "B-AMOUNT"
-  - "I-AMOUNT"
-  - "B-NAME"
-  - "I-NAME"
+  - "O"           # 0
+  - "B-DATE"      # 1
+  - "I-DATE"      # 2
+  - "B-AMOUNT"    # 3
+  - "I-AMOUNT"    # 4
+  - "B-NAME"      # 5
+  - "I-NAME"      # 6
 
 model:
   d_model: 256
   n_layers: 6
-  n_heads: 8
-  d_ff: 1024
+  n_heads: 8                  # 256 / 8 = 32 dims per head
+  d_ff: 1024                  # 4 × d_model (standard)
   dropout: 0.1
   max_len: 512
+
+  # Mamba-specific (used by Arm B and Arm C)
+  mamba:
+    d_state: 16
+    d_conv: 4
+    expand: 2                 # inner dim = expand × d_model = 512
 
   arms:
     transformer:
@@ -44,20 +53,20 @@ model:
       attn_layers: 0
       mamba_layers: 6
     hybrid_5_1:
-      attn_layers: 1
-      mamba_layers: 5
+      attn_layers: 1          # top layer = attention (global view)
+      mamba_layers: 5          # bottom 5 = Mamba (local sequential)
 
-  ablation_ratios:
-    - { attn: 2, mamba: 4 }
-    - { attn: 3, mamba: 3 }
+  ablation_ratios:             # Phase 6: test alternate ratios
+    - { attn: 2, mamba: 4 }   # "4:2"
+    - { attn: 3, mamba: 3 }   # "3:3"
 
 training:
   optimizer: "adamw"
-  lr: 3e-4
+  lr: 3.0e-4                  # tunable during training
   weight_decay: 0.01
   scheduler: "onecycle"
-  epochs: 20
-  batch_size: 16
+  epochs: 20                  # tunable
+  batch_size: 16              # tunable based on GPU memory
   grad_clip: 1.0
 
 evaluation:
