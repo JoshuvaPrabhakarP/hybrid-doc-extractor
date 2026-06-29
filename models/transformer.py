@@ -1,22 +1,14 @@
 """
 Arm A — Pure Transformer extractor.
-
 6 standard Transformer encoder layers (multi-head self-attention + FFN).
-Uses PyTorch's built-in nn.TransformerEncoderLayer for reliability.
 """
 
 import torch
 import torch.nn as nn
-
 from .base import BaseExtractor
 
 
 class TransformerExtractor(BaseExtractor):
-    """
-    Pure Transformer for token classification (NER).
-
-    Encoder: 6 × TransformerEncoderLayer(d_model=256, nhead=8, d_ff=1024)
-    """
 
     def __init__(
         self,
@@ -29,21 +21,24 @@ class TransformerExtractor(BaseExtractor):
         n_layers: int = 6,
         n_heads: int = 8,
         d_ff: int = 1024,
+        use_crf: bool = False,
+        class_weights: torch.Tensor | None = None,
     ):
         self.n_layers = n_layers
         self.n_heads = n_heads
         self.d_ff = d_ff
-        super().__init__(vocab_size, d_model, num_labels, max_len, dropout, pad_token_id)
+        self._dropout = dropout
+        super().__init__(vocab_size, d_model, num_labels, max_len, dropout, pad_token_id, use_crf, class_weights)
 
     def _build_encoder(self):
         encoder_layer = nn.TransformerEncoderLayer(
             d_model=self.d_model,
             nhead=self.n_heads,
             dim_feedforward=self.d_ff,
-            dropout=self.pos_encoder.dropout.p,
+            dropout=self._dropout,
             activation="gelu",
-            batch_first=True,        # (batch, seq, d_model) convention
-            norm_first=True,         # Pre-LN (more stable training)
+            batch_first=True,
+            norm_first=True,
         )
         self.encoder = nn.TransformerEncoder(
             encoder_layer,
@@ -52,17 +47,7 @@ class TransformerExtractor(BaseExtractor):
         )
 
     def encode(self, x: torch.Tensor, attention_mask: torch.Tensor | None = None) -> torch.Tensor:
-        """
-        Args:
-            x: (batch, seq_len, d_model)
-            attention_mask: (batch, seq_len) — 1=real, 0=pad
-
-        Returns:
-            (batch, seq_len, d_model)
-        """
-        # PyTorch TransformerEncoder expects src_key_padding_mask where True=IGNORE
         padding_mask = None
         if attention_mask is not None:
-            padding_mask = (attention_mask == 0)  # True for pad positions
-
+            padding_mask = (attention_mask == 0)
         return self.encoder(x, src_key_padding_mask=padding_mask)

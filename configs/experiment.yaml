@@ -3,47 +3,45 @@
 
 experiment:
   name: "hybrid-doc-extractor"
-  seed: [42, 123, 456]       # 3 seeds for statistical significance
+  seed: [42, 123, 456]
   device: "cuda"
 
 data:
-  datasets: ["wildreceipt", "sroie", "cord"]   # FUNSD dropped (structural labels only)
+  datasets: ["wildreceipt", "sroie", "cord"]
   total_documents: 3684
-  max_seq_len: 512            # 99%+ docs fit; max subwords observed = 646
-  train_split: 0.80           # 2,947 docs
-  val_split: 0.10             #   368 docs
-  test_split: 0.10            #   369 docs
+  max_seq_len: 512
+  train_split: 0.80
+  val_split: 0.10
+  test_split: 0.10
 
 tokenizer:
   type: "bpe"
   vocab_size: 8000
   min_frequency: 2
   special_tokens: ["[PAD]", "[UNK]", "[CLS]", "[SEP]", "[MASK]"]
-  # IDs:            0         1        2        3        4
   path: "tokenizer_training/tokenizer.json"
 
 labels:
-  - "O"           # 0
-  - "B-DATE"      # 1
-  - "I-DATE"      # 2
-  - "B-AMOUNT"    # 3
-  - "I-AMOUNT"    # 4
-  - "B-NAME"      # 5
-  - "I-NAME"      # 6
+  - "O"
+  - "B-DATE"
+  - "I-DATE"
+  - "B-AMOUNT"
+  - "I-AMOUNT"
+  - "B-NAME"
+  - "I-NAME"
 
 model:
   d_model: 256
   n_layers: 6
-  n_heads: 8                  # 256 / 8 = 32 dims per head
-  d_ff: 1024                  # 4 × d_model (standard)
-  dropout: 0.1
+  n_heads: 8
+  d_ff: 1024
+  dropout: 0.2            # increased from 0.1 to reduce overfitting
   max_len: 512
 
-  # Mamba-specific (used by Arm B and Arm C)
   mamba:
     d_state: 16
     d_conv: 4
-    expand: 2                 # inner dim = expand × d_model = 512
+    expand: 2
 
   arms:
     transformer:
@@ -53,21 +51,29 @@ model:
       attn_layers: 0
       mamba_layers: 6
     hybrid_5_1:
-      attn_layers: 1          # top layer = attention (global view)
-      mamba_layers: 5          # bottom 5 = Mamba (local sequential)
+      attn_layers: 1
+      mamba_layers: 5
+    hybrid_4_2:
+      attn_layers: 2
+      mamba_layers: 4
+    hybrid_3_3:
+      attn_layers: 3
+      mamba_layers: 3
+    hybrid_2_4:
+      attn_layers: 4
+      mamba_layers: 2
 
-  ablation_ratios:             # Phase 6: test alternate ratios
-    - { attn: 2, mamba: 4 }   # "4:2"
-    - { attn: 3, mamba: 3 }   # "3:3"
+  # ablation_ratios now defined as full arm configs above
 
 training:
   optimizer: "adamw"
-  lr: 3.0e-4                  # tunable during training
+  lr: 1.0e-4                    # reduced from 3e-4 for slower, steadier learning
   weight_decay: 0.01
   scheduler: "onecycle"
-  epochs: 20                  # tunable
-  batch_size: 16              # tunable based on GPU memory
+  epochs: 50                    # increased from 20 (early stopping will cut short)
+  batch_size: 16
   grad_clip: 1.0
+  early_stopping_patience: 7   # stop if val F1 doesn't improve for 7 epochs
 
 evaluation:
   metrics: ["entity_f1", "per_field_f1", "throughput_docs_per_sec", "peak_gpu_mb"]

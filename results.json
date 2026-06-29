@@ -1,0 +1,11 @@
+[
+  {
+    "arm": "hybrid_3_3",
+    "seed": 456,
+    "best_epoch": 18,
+    "best_val_f1": 0.583,
+    "params": 5734470,
+    "epochs_trained": 25,
+    "crf": true
+  }
+]
