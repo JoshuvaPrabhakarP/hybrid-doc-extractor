@@ -1,0 +1,176 @@
+{
+  "key_comparisons": [
+    {
+      "arm_a": "transformer",
+      "arm_b": "mamba",
+      "mean_diff": 0.0614,
+      "t_statistic": 7.6135,
+      "p_value": 0.0168,
+      "significant_at_05": true
+    },
+    {
+      "arm_a": "transformer",
+      "arm_b": "hybrid_5_1",
+      "mean_diff": 0.0248,
+      "t_statistic": 3.4673,
+      "p_value": 0.0741,
+      "significant_at_05": false
+    },
+    {
+      "arm_a": "transformer",
+      "arm_b": "hybrid_4_2",
+      "mean_diff": 0.0296,
+      "t_statistic": 2.1708,
+      "p_value": 0.1621,
+      "significant_at_05": false
+    },
+    {
+      "arm_a": "transformer",
+      "arm_b": "hybrid_3_3",
+      "mean_diff": 0.0191,
+      "t_statistic": 2.1136,
+      "p_value": 0.1689,
+      "significant_at_05": false
+    },
+    {
+      "arm_a": "transformer",
+      "arm_b": "hybrid_2_4",
+      "mean_diff": 0.0246,
+      "t_statistic": 6.5974,
+      "p_value": 0.0222,
+      "significant_at_05": true
+    },
+    {
+      "arm_a": "hybrid_5_1",
+      "arm_b": "mamba",
+      "mean_diff": 0.0366,
+      "t_statistic": 10.6086,
+      "p_value": 0.0088,
+      "significant_at_05": true
+    },
+    {
+      "arm_a": "hybrid_4_2",
+      "arm_b": "hybrid_5_1",
+      "mean_diff": -0.0048,
+      "t_statistic": -0.7383,
+      "p_value": 0.5372,
+      "significant_at_05": false
+    },
+    {
+      "arm_a": "hybrid_3_3",
+      "arm_b": "hybrid_4_2",
+      "mean_diff": 0.0105,
+      "t_statistic": 1.3409,
+      "p_value": 0.312,
+      "significant_at_05": false
+    },
+    {
+      "arm_a": "hybrid_2_4",
+      "arm_b": "hybrid_3_3",
+      "mean_diff": -0.0055,
+      "t_statistic": -1.0223,
+      "p_value": 0.4142,
+      "significant_at_05": false
+    }
+  ],
+  "full_matrix": {
+    "transformer_vs_hybrid_3_3": {
+      "p_value": 0.1689,
+      "significant": false
+    },
+    "transformer_vs_hybrid_2_4": {
+      "p_value": 0.0222,
+      "significant": true
+    },
+    "transformer_vs_hybrid_5_1": {
+      "p_value": 0.0741,
+      "significant": false
+    },
+    "transformer_vs_hybrid_4_2": {
+      "p_value": 0.1621,
+      "significant": false
+    },
+    "transformer_vs_mamba": {
+      "p_value": 0.0168,
+      "significant": true
+    },
+    "hybrid_3_3_vs_hybrid_2_4": {
+      "p_value": 0.4142,
+      "significant": false
+    },
+    "hybrid_3_3_vs_hybrid_5_1": {
+      "p_value": 0.3957,
+      "significant": false
+    },
+    "hybrid_3_3_vs_hybrid_4_2": {
+      "p_value": 0.312,
+      "significant": false
+    },
+    "hybrid_3_3_vs_mamba": {
+      "p_value": 0.0403,
+      "significant": true
+    },
+    "hybrid_2_4_vs_hybrid_5_1": {
+      "p_value": 0.9729,
+      "significant": false
+    },
+    "hybrid_2_4_vs_hybrid_4_2": {
+      "p_value": 0.6975,
+      "significant": false
+    },
+    "hybrid_2_4_vs_mamba": {
+      "p_value": 0.0405,
+      "significant": true
+    },
+    "hybrid_5_1_vs_hybrid_4_2": {
+      "p_value": 0.5372,
+      "significant": false
+    },
+    "hybrid_5_1_vs_mamba": {
+      "p_value": 0.0088,
+      "significant": true
+    },
+    "hybrid_4_2_vs_mamba": {
+      "p_value": 0.0521,
+      "significant": false
+    }
+  },
+  "arm_scores": {
+    "transformer": [
+      0.6062,
+      0.6088,
+      0.6303
+    ],
+    "mamba": [
+      0.5591,
+      0.5468,
+      0.5553
+    ],
+    "hybrid_5_1": [
+      0.59,
+      0.5896,
+      0.5913
+    ],
+    "hybrid_4_2": [
+      0.5919,
+      0.5911,
+      0.5735
+    ],
+    "hybrid_3_3": [
+      0.5874,
+      0.6052,
+      0.5954
+    ],
+    "hybrid_2_4": [
+      0.5806,
+      0.5911,
+      0.5998
+    ]
+  },
+  "seed_order": [
+    42,
+    123,
+    456
+  ],
+  "caveat": "n=3 seeds; results are suggestive given limited statistical power"
+}

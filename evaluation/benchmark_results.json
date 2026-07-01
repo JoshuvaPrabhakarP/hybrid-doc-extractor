@@ -1,0 +1,98 @@
+{
+  "transformer_bs1": {
+    "docs_per_sec": 74.67,
+    "peak_gpu_mb": 41.3,
+    "total_docs_measured": 30,
+    "elapsed_s": 0.402,
+    "arm": "transformer",
+    "batch_size": 1
+  },
+  "mamba_bs1": {
+    "docs_per_sec": 62.48,
+    "peak_gpu_mb": 30.9,
+    "total_docs_measured": 30,
+    "elapsed_s": 0.48,
+    "arm": "mamba",
+    "batch_size": 1
+  },
+  "hybrid_5_1_bs1": {
+    "docs_per_sec": 64.63,
+    "peak_gpu_mb": 34.6,
+    "total_docs_measured": 30,
+    "elapsed_s": 0.464,
+    "arm": "hybrid_5_1",
+    "batch_size": 1
+  },
+  "hybrid_4_2_bs1": {
+    "docs_per_sec": 71.85,
+    "peak_gpu_mb": 35.9,
+    "total_docs_measured": 30,
+    "elapsed_s": 0.418,
+    "arm": "hybrid_4_2",
+    "batch_size": 1
+  },
+  "hybrid_3_3_bs1": {
+    "docs_per_sec": 70.5,
+    "peak_gpu_mb": 37.3,
+    "total_docs_measured": 30,
+    "elapsed_s": 0.426,
+    "arm": "hybrid_3_3",
+    "batch_size": 1
+  },
+  "hybrid_2_4_bs1": {
+    "docs_per_sec": 66.33,
+    "peak_gpu_mb": 38.6,
+    "total_docs_measured": 30,
+    "elapsed_s": 0.452,
+    "arm": "hybrid_2_4",
+    "batch_size": 1
+  },
+  "transformer_bs16": {
+    "docs_per_sec": 151.53,
+    "peak_gpu_mb": 338.8,
+    "total_docs_measured": 209,
+    "elapsed_s": 1.379,
+    "arm": "transformer",
+    "batch_size": 16
+  },
+  "mamba_bs16": {
+    "docs_per_sec": 177.04,
+    "peak_gpu_mb": 150.8,
+    "total_docs_measured": 209,
+    "elapsed_s": 1.181,
+    "arm": "mamba",
+    "batch_size": 16
+  },
+  "hybrid_5_1_bs16": {
+    "docs_per_sec": 191.88,
+    "peak_gpu_mb": 332.1,
+    "total_docs_measured": 209,
+    "elapsed_s": 1.089,
+    "arm": "hybrid_5_1",
+    "batch_size": 16
+  },
+  "hybrid_4_2_bs16": {
+    "docs_per_sec": 169.88,
+    "peak_gpu_mb": 333.5,
+    "total_docs_measured": 209,
+    "elapsed_s": 1.23,
+    "arm": "hybrid_4_2",
+    "batch_size": 16
+  },
+  "hybrid_3_3_bs16": {
+    "docs_per_sec": 178.23,
+    "peak_gpu_mb": 334.8,
+    "total_docs_measured": 209,
+    "elapsed_s": 1.173,
+    "arm": "hybrid_3_3",
+    "batch_size": 16
+  },
+  "hybrid_2_4_bs16": {
+    "docs_per_sec": 176.36,
+    "peak_gpu_mb": 336.1,
+    "total_docs_measured": 209,
+    "elapsed_s": 1.185,
+    "arm": "hybrid_2_4",
+    "batch_size": 16
+  }
+}
