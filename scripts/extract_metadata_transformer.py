@@ -29,6 +29,45 @@ import sys
 import time
 
 
+def group_entities_to_lists(results):
+    """
+    Group consecutive same-tag entities into LISTS of field values — not
+    joined into a single comma-separated string like
+    app_gradio.inference.entities_to_field_dict() does. That joining is
+    fine for display in the Gradio app, but wrong for evaluation: it would
+    compare a single ground-truth value against a joined multi-value
+    string, which are not the same kind of thing (a receipt commonly has
+    several real AMOUNT spans — subtotal, tax, total — and ground truth
+    only keeps the first one, per chunk_corpus.py's extract_gt_fields()).
+    This mirrors that same list structure exactly, so both sides of the
+    comparison in Step 3c are symmetric.
+    """
+    fields = {"DATE": [], "AMOUNT": [], "NAME": []}
+    current_tag, current_words = None, []
+
+    def flush():
+        if current_tag and current_words:
+            fields[current_tag].append(" ".join(current_words))
+
+    for r in results:
+        tag = r["tag"]
+        if tag == "O":
+            flush()
+            current_tag, current_words = None, []
+        elif tag.startswith("B-"):
+            flush()
+            current_tag = tag[2:]
+            current_words = [r["word"]]
+        elif tag.startswith("I-") and tag[2:] == current_tag:
+            current_words.append(r["word"])
+        else:
+            flush()
+            current_tag, current_words = None, []
+    flush()
+
+    return fields
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--old-repo-root", default=os.path.expanduser("~/hybrid-doc-extractor"))
@@ -47,7 +86,7 @@ def main():
 
     print(f"Importing inference code from {old_repo_root}...")
     try:
-        from app_gradio.inference import extract_entities_from_text, entities_to_field_dict
+        from app_gradio.inference import extract_entities_from_text
     except ImportError as e:
         print(f"ERROR: could not import app_gradio.inference from {old_repo_root}: {e}")
         print("Make sure this is running in the OLD venv "
@@ -76,22 +115,18 @@ def main():
 
     for i, chunk in enumerate(chunks):
         results = extract_entities_from_text(chunk["text"], arm_name=args.arm, seed=args.seed)
-        fields = entities_to_field_dict(results)
-
-        # entities_to_field_dict uses "—" for absent fields and joins
-        # multiple matches with ", " — normalize to match the ground-truth
-        # schema's field naming (vendor/date/amount) and None-for-absent
-        # convention from chunk_corpus.py's extract_gt_fields().
-        def clean(v):
-            return None if v == "—" else v
+        fields = group_entities_to_lists(results)
 
         records.append({
             "chunk_id": chunk["chunk_id"],
             "doc_id": chunk["doc_id"],
             "predicted": {
-                "vendor": clean(fields.get("NAME")),
-                "date": clean(fields.get("DATE")),
-                "amount": clean(fields.get("AMOUNT")),
+                "vendor": fields["NAME"][0] if fields["NAME"] else None,
+                "date": fields["DATE"][0] if fields["DATE"] else None,
+                "amount": fields["AMOUNT"][0] if fields["AMOUNT"] else None,
+                "all_vendors": fields["NAME"],
+                "all_dates": fields["DATE"],
+                "all_amounts": fields["AMOUNT"],
             },
         })
 
