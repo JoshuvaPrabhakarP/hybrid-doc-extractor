@@ -75,6 +75,17 @@ causal-conv1d==1.5.0.post8 plus mamba-ssm==2.2.4 is the confirmed-compatible pai
 
 A package installing without error does not mean it works. Always run scripts/verify_setup.py and confirm a real GPU forward pass succeeds, not just that import succeeds.
 
+
+## Running the interactive demo
+
+python app_gradio/app.py
+
+This launches a local Gradio dashboard with all 6 architectures, live extraction,
+and full comparison charts. Requires a CUDA GPU for the Mamba/Hybrid architectures.
+
+Add `share=True` inside `app_gradio/app.py`'s `demo.launch()` call for a temporary
+public link (valid ~72 hours).
+
 ---
 
 ## License
